@@ -20,11 +20,3 @@ type Artist struct {
 	Thumb               []Thumb  `xml:"thumb"`
 	Path                string   `xml:"path"`
 }
-
-type Thumb struct {
-	Spoof   string `xml:"spoof,attr"`
-	Cache   string `xml:"cache,attr"`
-	Aspect  string `xml:"aspect,attr"`
-	Preview string `xml:"preview,attr"`
-	Value   string `xml:",chardata"`
-}
