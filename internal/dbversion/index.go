@@ -29,6 +29,5 @@ func StartVersion(dataPath string) error {
 	if err != nil {
 		return err
 	}
-	m.Up()
-	return nil
+	return m.Migrate(100)
 }
