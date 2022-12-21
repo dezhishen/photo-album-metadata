@@ -6,10 +6,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
+	"github.com/dezhishen/photo-album-metadata/internal/inits"
 	"github.com/dezhishen/photo-album-metadata/internal/routes"
 	"github.com/dezhishen/photo-album-metadata/pkg/config"
-	"github.com/dezhishen/photo-album-metadata/pkg/fileutil"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,15 +22,14 @@ func main() {
 		panic(err)
 	}
 	log.Printf("current working directory: %s", wd)
-	err = config.Init(fmt.Sprintf("%s%sconfig", wd, string(filepath.Separator)))
+	cfgPath := fmt.Sprintf("%s%sconfig", wd, string(filepath.Separator))
+	// 初始化配置
+	err = config.Init(cfgPath)
 	if err != nil {
 		panic(err)
 	}
-	cfg := config.Get()
-	err = fileutil.ScanFile(cfg.RootPath, func(line string) error { return nil })
-	if err != nil {
-		return
-	}
+	cfg := config.GetConfig()
+	doInit(cfg)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	err = routes.Init(r)
@@ -37,4 +37,24 @@ func main() {
 		panic(err)
 	}
 	r.Run(cfg.ListenAddr)
+}
+
+func doInit(cfg *config.Config) {
+	jobs := inits.GetAll()
+	if len(jobs) == 0 {
+		return
+	}
+	wg := &sync.WaitGroup{}
+	wg.Add(len(jobs))
+	for _, job := range jobs {
+		handler := job
+		go func(c *config.Config) {
+			defer wg.Done()
+			err := handler(c)
+			if err != nil {
+				panic(err)
+			}
+		}(cfg)
+	}
+	wg.Wait()
 }
