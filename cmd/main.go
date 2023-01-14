@@ -32,10 +32,7 @@ func main() {
 	doInit(cfg)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	err = routes.Init(r)
-	if err != nil {
-		panic(err)
-	}
+	routes.Init(r)
 	r.Run(cfg.ListenAddr)
 }
 
