@@ -9,6 +9,7 @@ import (
 	sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/sirupsen/logrus"
 )
 
 func StartVersion(dataPath string) error {
@@ -29,5 +30,14 @@ func StartVersion(dataPath string) error {
 	if err != nil {
 		return err
 	}
-	return m.Migrate(100)
+	version, _, err := m.Version()
+	if err != nil && err == migrate.ErrNilVersion {
+		return m.Up()
+	}
+	err = m.Up()
+	if err != nil && err != migrate.ErrNoChange {
+		return err
+	}
+	logrus.Infof("current database version is %d", version)
+	return nil
 }
