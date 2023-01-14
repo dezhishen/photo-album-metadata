@@ -3,10 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/dezhishen/photo-album-metadata/internal/inits"
 	"github.com/dezhishen/photo-album-metadata/internal/routes"
@@ -21,7 +19,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("current working directory: %s", wd)
+	// log.Printf("current working directory: %s", wd)
 	cfgPath := fmt.Sprintf("%s%sconfig", wd, string(filepath.Separator))
 	// 初始化配置
 	err = config.Init(cfgPath)
@@ -41,17 +39,11 @@ func doInit(cfg *config.Config) {
 	if len(jobs) == 0 {
 		return
 	}
-	wg := &sync.WaitGroup{}
-	wg.Add(len(jobs))
 	for _, job := range jobs {
 		handler := job
-		go func(c *config.Config) {
-			defer wg.Done()
-			err := handler(c)
-			if err != nil {
-				panic(err)
-			}
-		}(cfg)
+		err := handler(cfg)
+		if err != nil {
+			panic(err)
+		}
 	}
-	wg.Wait()
 }

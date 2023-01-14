@@ -11,7 +11,7 @@ import (
 
 func init() {
 	//最大优先级 int8.Max
-	registerWithPriority(doInit, 255)
+	registerWithPriority(doInitLogger, 0)
 }
 
 func defaultLoggerConfig(cfg *config.Config) *config.LoggerConfig {
@@ -21,7 +21,7 @@ func defaultLoggerConfig(cfg *config.Config) *config.LoggerConfig {
 	}
 }
 
-func doInit(cfg *config.Config) error {
+func doInitLogger(cfg *config.Config) error {
 	loggerConfig := cfg.LoggerConf
 	if loggerConfig == nil {
 		loggerConfig = defaultLoggerConfig(cfg)
@@ -61,5 +61,6 @@ func doInit(cfg *config.Config) error {
 	default:
 		logrus.SetLevel(logrus.InfoLevel)
 	}
+	logrus.SetReportCaller(true)
 	return nil
 }

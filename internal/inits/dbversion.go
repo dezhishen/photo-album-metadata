@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(doInitDB)
+	registerWithPriority(doInitDB, 1)
 }
 func doInitDB(cfg *config.Config) error {
 	log.Info("start init database version")
