@@ -23,7 +23,7 @@ CREATE table
     );
 
 -- create default user and admin role
-INSERT INTO `user` (id, username, `password`) VALUES ('1', 'admin', 'admin');
+INSERT INTO `user` (id, username) VALUES ('1', 'admin');
 INSERT INTO `role` (id, `code`, `name`) VALUES ('1', 'admin', 'admin');
 INSERT INTO `user_role` (user_id, role_id) VALUES ('1', '1');
 INSERT INTO `account` (id, user_id, `name`, `password`) VALUES ('1', '1', 'admin', 'admin');
